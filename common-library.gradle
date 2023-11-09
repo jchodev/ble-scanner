@@ -1,0 +1,50 @@
+
+apply from: "$project.rootDir/common-android-version.gradle"
+
+dependencies {
+
+    // Dependency injection
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+
+    //constraintlayout
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+
+    // Networking
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_moshi_convertor"
+    implementation "com.squareup.okhttp3:okhttp:$restofit_ok_http3_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$retrofit_logging_interceptor"
+
+    //scope
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+
+
+    implementation  "androidx.appcompat:appcompat:$appcompat_version"
+
+    // JUnit 5
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation  "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testRuntimeOnly"org.junit.vintage:junit-vintage-engine"
+
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
+
+
+    //turbine
+    implementation "org.jetbrains.kotlin:kotlin-test"
+    implementation  "app.cash.turbine:turbine:$turbine_version"
+
+    //timber
+    implementation "com.jakewharton.timber:timber:$timber_verion"
+
+    //room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
+    //permission
+    implementation "com.google.accompanist:accompanist-permissions:$permission_verion"
+}

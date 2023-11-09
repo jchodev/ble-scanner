@@ -1,0 +1,112 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
+
+apply from: "$project.rootDir/common-android-version.gradle"
+apply from: "$project.rootDir/common-library.gradle"
+apply from: "$project.rootDir/jetpack-compose.gradle"
+apply from: "$project.rootDir/jacoco.gradle"
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+android {
+    namespace 'com.jerry.blescanner'
+
+    defaultConfig {
+        applicationId "com.jerry.blescanner"
+
+        versionCode 1
+        versionName "1.0"
+
+        buildConfigField "String", "BASE_URL", "\"https://api-proxy.ofcom.org.uk/\""
+        buildConfigField "String", "KEY", "\"\""
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+
+        // Temporarily solution to fix:
+        // Dependency 'androidx.emoji2:emoji2-views-helper:1.4.0' requires libraries and applications that
+        // depend on it to compile against version 34 or later of the
+        // Android APIs.
+        configurations.all {
+            resolutionStrategy {
+                force("androidx.emoji2:emoji2-views-helper:1.3.0")
+                force("androidx.emoji2:emoji2:1.3.0")
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.5"
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation project(":base-modiule")
+    implementation project(":jetpack-design-lib")
+    implementation project(":features:bluetooth")
+
+    // LeakCanary //app only
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
+
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+}
+
+// Allow references to generated code {https://developer.android.com/training/dependency-injection/hilt-android}
+kapt {
+    correctErrorTypes true
+}

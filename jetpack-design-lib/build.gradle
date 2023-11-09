@@ -1,0 +1,11 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+apply from: "$project.rootDir/common-android-version.gradle"
+apply from: "$project.rootDir/jetpack-compose.gradle"
+
+android {
+    namespace 'com.jerry.blescanner.jetpack_design_lib'
+}

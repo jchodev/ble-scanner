@@ -1,0 +1,37 @@
+android {
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.5"
+    }
+}
+
+dependencies {
+    implementation "androidx.compose:compose-bom:$jetpack_compose_bom"
+    implementation "androidx.compose.material3:material3:$material3_version"
+
+
+    // Jetpack Compose
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview"
+    debugImplementation "androidx.compose.ui:ui-tooling"
+    //debugNotMinifiedImplementation "androidx.compose.ui:ui-tooling"
+    implementation "androidx.compose.runtime:runtime:$compose_version"
+
+    implementation "androidx.activity:activity-compose:$activity_compose_version"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_runtime_compose_version"
+
+    //live data using at compose
+    implementation "androidx.compose.runtime:runtime-livedata:$jackpack_runtime_livedata"
+
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    //fix jetpack pager build issues
+    implementation "androidx.compose.foundation:foundation:$fundation_version"
+
+}
