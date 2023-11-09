@@ -1,8 +1,9 @@
 package com.jerry.blescanner.features.bluetooth.presentation.viewmodel
 
-import android.bluetooth.BluetoothDevice
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.jerry.blescanner.basemodule.presentation.mvi.BaseViewModel
+import com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceDomain
 import com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceScanManager
 import com.jerry.blescanner.features.bluetooth.presentation.mvi.BluetoothPageAction
 import com.jerry.blescanner.features.bluetooth.presentation.mvi.BluetoothPageIntent
@@ -31,8 +32,9 @@ class BluetoothViewModel @Inject constructor(
     private val _bottomViewState = MutableStateFlow<BottomViewState>(BottomViewState.NoPermission)
     val bottomViewState = _bottomViewState.asStateFlow()
 
-    private val _deviceListState = MutableStateFlow<List<BluetoothDevice>?>(null)
-    val deviceListState = _deviceListState.asStateFlow()
+    //list of scanned device
+    private val _scannedDevicesListState = MutableStateFlow<List<BluetoothDeviceDomain>>(emptyList())
+    val scannedDevicesListState = _scannedDevicesListState.asStateFlow()
 
     override suspend fun handleIntent(intent: BluetoothPageIntent): List<BluetoothPageAction> {
         return when (intent){
@@ -87,32 +89,43 @@ class BluetoothViewModel @Inject constructor(
     }
 
     private fun startScan() {
+
         viewModelScope.launch {
-            bluetoothDeviceScanManager.scannedDevices.collect {
-                Timber.d("BluetoothViewModel::bluetoothDeviceUseCase.scannedDevices.collect ::${it}")
-                _deviceListState.value = it
-                //_deviceListUIState.value = UiDataState.Success(it)
+            bluetoothDeviceScanManager.scannedDeviceState.collect {device->
+                device?.let {
+                    Timber.d("BluetoothViewModel::bluetoothDeviceScanManager.scannedDeviceState.collect ::${device}")
+
+                    val updatedList = _scannedDevicesListState.value.toMutableList()
+                    val deviceIndex = updatedList.indexOfFirst { it.address == device.address }
+                    if (deviceIndex != -1) {
+                        updatedList[deviceIndex] = device.copy(rssi = device.rssi, distance = device.distance)
+                    } else {
+                        updatedList.add(device)
+                    }
+                    _scannedDevicesListState.value = updatedList
+
+                    Timber.d("BluetoothViewModel::_scannedDevicesListState ::${_scannedDevicesListState.value}")
+                }
             }
         }
 
         viewModelScope.launch {
-            bluetoothDeviceScanManager.finishScan.collect {
-                Timber.d("BluetoothViewModel::bluetoothDeviceUseCase.scannedDevices.collect ::${it}")
-                if (it==true){
-                    _bottomViewState.value = BottomViewState.GrantedPermission
+            bluetoothDeviceScanManager.scanningState.collect {
+                Timber.d("BluetoothViewModel::bluetoothDeviceScanManager.scanningState.collect ::${it}")
+                if (it){
+                    _bottomViewState.value = BottomViewState.Scanning
                 }
                 else {
-                    _bottomViewState.value = BottomViewState.Scanning
+                    _bottomViewState.value = BottomViewState.GrantedPermission
                 }
             }
         }
-        _deviceListState.value = null
+        _scannedDevicesListState.value = emptyList()
         bluetoothDeviceScanManager.startScan()
     }
 
     private fun stopScan() {
         Timber.d("BluetoothViewModel::stopScan")
-        _deviceListState.value = null
         bluetoothDeviceScanManager.stopScan()
     }
 

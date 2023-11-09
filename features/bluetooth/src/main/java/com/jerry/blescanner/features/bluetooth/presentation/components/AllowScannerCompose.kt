@@ -19,7 +19,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AllowScannerCompose(
     modifier: Modifier = Modifier,
@@ -36,7 +35,7 @@ fun AllowScannerCompose(
                 clickSearch()
             }
         ) {
-            Text(text = "Start Search")
+            Text(text = "Start Scanning")
         }
     }
 }

@@ -2,11 +2,10 @@ package com.jerry.blescanner.features.bluetooth.domain
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
-import android.os.CountDownTimer
+import com.jerry.blescanner.features.bluetooth.data.mapper.toBluetoothDeviceDomain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Singleton
+import kotlin.random.Random
 
 //ref: https://github.com/MatthiasKerat/BLETutorialYt/blob/FinalApp/app/src/main/java/com/example/bletutorial/data/ble/TemperatureAndHumidityBLEReceiveManager.kt
 class BluetoothDeviceScanManager @Inject constructor(
@@ -25,27 +24,17 @@ class BluetoothDeviceScanManager @Inject constructor(
         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
         .build()
 
-    private val _scannedDevices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
-    val scannedDevices: StateFlow<List<BluetoothDevice>>
-        get() = _scannedDevices.asStateFlow()
+    private val _scannedDeviceState = MutableStateFlow<BluetoothDeviceDomain?>(null)
+    val scannedDeviceState: StateFlow<BluetoothDeviceDomain?>
+        get() = _scannedDeviceState.asStateFlow()
 
 
-    private val _finishScan = MutableStateFlow<Boolean>(false)
-    val finishScan: StateFlow<Boolean>
-        get() = _finishScan.asStateFlow()
 
-    val timer = object: CountDownTimer(5000, 1000) {
-        override fun onTick(p0: Long) {
-            //TODO("Not yet implemented")
-        }
+    private val _scanningState = MutableStateFlow<Boolean>(false)
+    val scanningState: StateFlow<Boolean>
+        get() = _scanningState.asStateFlow()
 
-        override fun onFinish() {
-            _finishScan.value = true
-            stopScan()
-        }
-    }
-
-    val scanCallback = object : ScanCallback() {
+    private val scanCallback = object : ScanCallback() {
 
         override fun onScanFailed(errorCode: Int) {
             Timber.d("com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceUseCase::onScanFailed::errorCode::${errorCode}")
@@ -60,6 +49,7 @@ class BluetoothDeviceScanManager @Inject constructor(
                 "com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceUseCase::onScanResult::callbackType::${callbackType}"+
                         "::result::${result}"
             )
+            _scanningState.value = true
             addScanResult(result)
         }
 
@@ -83,7 +73,7 @@ class BluetoothDeviceScanManager @Inject constructor(
     @SuppressLint("MissingPermission")
     fun stopScan() {
         try {
-            timer.cancel()
+            _scanningState.value = false
             bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
         } catch (e: Exception){
             //
@@ -92,19 +82,14 @@ class BluetoothDeviceScanManager @Inject constructor(
 
     @SuppressLint("MissingPermission")
     private fun addScanResult(result: ScanResult) {
+        val rssi = result.rssi
 
-        if (scannedDevices.value.none { it.address == result.device.address }){
-            Timber.d(
-                "BluetoothDeviceScanManager::addScanResult::${result}"
-            )
-            _finishScan.value = false
-            timer.cancel()
-            timer.start()
+        Timber.d( "BluetoothDeviceScanManager::addScanResult:: ${result.device.name}, " +
+                "Address::${result.device.address}"+
+                ", RSSI: ${result.rssi}")
 
-            _scannedDevices.value = _scannedDevices.value.plus(
-                result.device
-            )
-        }
+        _scannedDeviceState.value = result.device.toBluetoothDeviceDomain(rssi)
     }
+
 
 }

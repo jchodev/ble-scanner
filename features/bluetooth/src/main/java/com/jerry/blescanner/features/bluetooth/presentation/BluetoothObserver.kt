@@ -13,14 +13,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.jerry.blescanner.features.bluetooth.utils.BluetoothStopSource
 import timber.log.Timber
 
 //this class is work with activity lifecycle
 class BluetoothObserver(
     private val activity: ComponentActivity,
     private val bluetoothAdapter: BluetoothAdapter,
-    private val stopScan:() -> Unit,
-    private val scan:() -> Unit,
+    private val stopScan:(BluetoothStopSource) -> Unit,
     private val bluetoothEnabled:(Boolean) -> Unit
 ): DefaultLifecycleObserver {
 
@@ -46,7 +46,7 @@ class BluetoothObserver(
 
         } finally {
             //bleManager.stopScan()
-            stopScan()
+            stopScan(BluetoothStopSource.ON_PAUSE)
         }
     }
 

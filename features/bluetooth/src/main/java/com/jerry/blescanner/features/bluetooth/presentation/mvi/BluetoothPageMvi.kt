@@ -2,6 +2,7 @@ package com.jerry.blescanner.features.bluetooth.presentation.mvi
 
 import com.jerry.blescanner.basemodule.presentation.mvi.MviAction
 import com.jerry.blescanner.basemodule.presentation.mvi.MviIntent
+import com.jerry.blescanner.features.bluetooth.utils.BluetoothStopSource
 
 //intent
 sealed class BluetoothPageIntent: MviIntent {
@@ -9,7 +10,7 @@ sealed class BluetoothPageIntent: MviIntent {
     class SetPermissionGranted(val value: Boolean): BluetoothPageIntent()
 
     object StartScan: BluetoothPageIntent()
-    object StopScan: BluetoothPageIntent()
+    class StopScan(val source: BluetoothStopSource): BluetoothPageIntent()
 }
 
 //action

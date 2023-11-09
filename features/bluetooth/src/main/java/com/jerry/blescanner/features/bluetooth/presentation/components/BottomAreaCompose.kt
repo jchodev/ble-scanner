@@ -1,7 +1,6 @@
 package com.jerry.blescanner.features.bluetooth.presentation.components
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -9,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.jerry.blescanner.features.bluetooth.presentation.state.BottomViewState
+import com.jerry.blescanner.features.bluetooth.utils.BluetoothStopSource
 import com.jerry.blescanner.features.bluetooth.utils.permissionsBleScanList
 
 /*
@@ -25,7 +25,8 @@ fun BottomAreaCompose(
     allPermissionsGranted: () -> Unit,
     permissionsNonGranted: () -> Unit,
     clickSearch:() -> Unit,
-    bottomViewState: State<BottomViewState>
+    bottomViewState: State<BottomViewState>,
+    stopScan:(BluetoothStopSource) -> Unit,
 //    deviceListUIState: State<UiDataState<List<BluetoothDeviceDomain>>?>
 ) {
     val multiplePermissionsState = rememberMultiplePermissionsState(permissions = permissionsBleScanList)
@@ -49,8 +50,7 @@ fun BottomAreaCompose(
         }
         is BottomViewState.Scanning -> {
             //Text(text = "Scanning")
-            ScanningCompose()
-
+            ScanningCompose(stopScan = stopScan)
         }
     }
 }
