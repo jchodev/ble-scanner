@@ -10,17 +10,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jerry.blescanner.features.bluetooth.presentation.components.BottomAreaCompose
 import com.jerry.blescanner.features.bluetooth.presentation.components.DevicesList
@@ -92,18 +98,26 @@ class BluetoothActivity : ComponentActivity() {
 
         setContent {
             MyTheme {
-                Surface(
+                Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    topBar = {
+                        TopAppBar(
+                            colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
+                            title = {
+                                Text("BLE Scan", color = MaterialTheme.colorScheme.onPrimary)
+                            }
+                        )
+                    }
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize().padding(it)
                     ) {
                         //StandardBottomSheetM3()
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(7f, true)
+                                .background(Color.White)
                         ) {
                             DevicesList(
                                 devicesState = viewModel.scannedDevicesListState.collectAsStateWithLifecycle()
@@ -113,7 +127,7 @@ class BluetoothActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(3f, true)
-                                .background(Color.Red)
+                                .background(Color.LightGray,  RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                         ) {
                             BottomAreaCompose(
                                 allPermissionsGranted = onPermissionGranted,

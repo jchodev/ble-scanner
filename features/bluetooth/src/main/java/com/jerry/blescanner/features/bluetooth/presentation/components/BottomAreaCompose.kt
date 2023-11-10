@@ -51,6 +51,7 @@ fun BottomAreaCompose(
         is BottomViewState.Scanning -> {
             //Text(text = "Scanning")
             ScanningCompose(stopScan = stopScan)
+            //ScanningAnimation()
         }
     }
 }

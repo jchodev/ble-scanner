@@ -10,7 +10,7 @@ data class BluetoothDeviceDomain(
     val name: String?,
     val address: String,
     var distance: String,
-    var rssi: MutableState<Int>
+    var rssi: Int
 )
 
 data class BluetoothDeviceDomain3(
