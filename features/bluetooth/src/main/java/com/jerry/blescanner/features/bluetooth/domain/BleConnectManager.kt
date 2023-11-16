@@ -27,21 +27,13 @@ class BleConnectManager @Inject constructor(
     private var bluetoothGatt: BluetoothGatt? = null
 
     //UI state
-    private val _uiState = MutableStateFlow<UiDataState<List<BleDeviceService>>>(UiDataState.Initial)
-    val uiState : StateFlow<UiDataState<List<BleDeviceService>>?>
-        get() = _uiState.asStateFlow()
+    private val _serviceListState = MutableStateFlow<List<BleDeviceService>?>(null)
+    val serviceListState :  StateFlow<List<BleDeviceService>?>
+        get() = _serviceListState.asStateFlow()
 
     private val _connectionState = MutableStateFlow<Int?>(null)
     val connectionState: StateFlow<Int?>
         get() = _connectionState.asStateFlow()
-
-//    private val _deviceConnectionState = MutableStateFlow<HashMap<String, Boolean>>(hashMapOf())
-//    val deviceConnectionState: StateFlow<HashMap<String, Boolean>>
-//        get() = _deviceConnectionState.asStateFlow()
-
-//    private val _bleDeviceServicesState = MutableStateFlow<List<BleDeviceService>>(emptyList())
-//    val bleDeviceServicesState : StateFlow<List<BleDeviceService>>
-//        get() = _bleDeviceServicesState.asStateFlow()
 
     private val bluetoothGattCallback = object : BluetoothGattCallback() {
 
@@ -65,25 +57,6 @@ class BleConnectManager @Inject constructor(
                 }
             }
 
-            /*
-                        when (newState) {
-                BluetoothProfile.STATE_CONNECTING -> connectMessage.value =
-                    ConnectionState.CONNECTING
-
-                BluetoothProfile.STATE_CONNECTED -> {
-                    connectMessage.value = ConnectionState.CONNECTED
-                    btGatt?.discoverServices()
-                }
-
-                BluetoothProfile.STATE_DISCONNECTING -> connectMessage.value =
-                    ConnectionState.DISCONNECTING
-
-                BluetoothProfile.STATE_DISCONNECTED -> connectMessage.value =
-                    ConnectionState.DISCONNECTED
-
-                else -> connectMessage.value = ConnectionState.DISCONNECTED
-            }
-             */
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
@@ -92,11 +65,10 @@ class BleConnectManager @Inject constructor(
             gatt?.let {
                 bluetoothGatt = gatt
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    _uiState.value = UiDataState.Success(
-                        gatt.services.map {
-                            it.toBleDeviceService()
-                        }
-                    )
+                    _serviceListState.value = gatt.services.map {
+                        it.toBleDeviceService()
+                    }
+
 //                    gatt.services?.forEach { gattService ->
 //                        Timber.d("BleConnectManager::service::uuid::${gattService.uuid}::${AllGattServices.lookup(gattService.uuid)} ")
 //
@@ -127,13 +99,15 @@ class BleConnectManager @Inject constructor(
 
             }
         } else {
-            _uiState.value = UiDataState.Failure("bluetoothAdapter is not enabled")
+            //TODO error statue
+            //_uiState.value = UiDataState.Failure("bluetoothAdapter is not enabled")
         }
     }
 
     fun disconnect(){
         try {
-            _uiState.value = UiDataState.Initial
+            _serviceListState.value = emptyList()
+           // _uiState.value = UiDataState.Initial
             _connectionState.value = null
             bluetoothGatt?.let { gatt ->
                 gatt.disconnect()

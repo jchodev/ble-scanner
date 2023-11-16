@@ -2,6 +2,8 @@ package com.jerry.blescanner.features.bluetooth.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -10,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jerry.blescanner.basemodule.presentation.UiDataState
+import com.jerry.blescanner.features.bluetooth.domain.BleDeviceService
 import com.jerry.blescanner.features.bluetooth.presentation.viewmodel.BluetoothConnectViewModel
 import com.jerry.blescanner.jetpack_design_lib.common.loading.CommonLoading
 
@@ -18,7 +21,7 @@ fun BleConnectPage(
     address: String,
     bluetoothConnectViewModel: BluetoothConnectViewModel
 ) {
-    val uiState = bluetoothConnectViewModel.uiState.collectAsStateWithLifecycle()
+    val serviceListState = bluetoothConnectViewModel.serviceListState.collectAsStateWithLifecycle()
     val connectionState = bluetoothConnectViewModel.connectionState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = address){
@@ -30,27 +33,49 @@ fun BleConnectPage(
         }
     }
 
-    Column {
-        //connection
-        Text(text = connectionState.value?.toString() ?: "null")
-
-        //UI
-        when (uiState.value){
-            is UiDataState.Loading -> CommonLoading()
-            is UiDataState.Success -> Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(text = uiState.value.toString())
-            }
-            is UiDataState.Failure -> Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(text = (uiState.value as UiDataState.Failure).errorAny.toString())
-            }
-
-            else -> {}
-        }
+    val statue = if (connectionState.value == 0){
+        "Connected"
+    } else {
+        "Connecting..."
     }
 
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        //connection
+        Text(text = "Connected Statue: ${statue}")
 
+        //UI
+        if (serviceListState.value?.isNotEmpty() == true){
+
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(serviceListState.value!!){
+                    ServiceItem(bleDeviceService = it)
+                }
+            }
+
+        }
+        else {
+            CommonLoading()
+        }
+    }
+}
+
+@Composable
+fun ServiceItem(
+    bleDeviceService: BleDeviceService
+) {
+    Column {
+        Text(text = "Service: ${bleDeviceService.name} (${bleDeviceService.uuid}" )
+    }
+    bleDeviceService.characteristics.forEach { char->
+        Column {
+            Text(text = " Characteristic: ${char.name} (${char.uuid}" )
+        }
+        char.bleDeviceDescriptors.forEach {bleDeviceDescriptor ->
+            Column {
+                Text(text = "  DeviceDescriptor: ${bleDeviceDescriptor.name} (${bleDeviceDescriptor.uuid}" )
+            }
+        }
+    }
 }

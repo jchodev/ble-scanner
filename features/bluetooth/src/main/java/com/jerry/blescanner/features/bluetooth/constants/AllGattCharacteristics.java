@@ -4,6 +4,7 @@ package com.jerry.blescanner.features.bluetooth.constants;
 import java.util.HashMap;
 import java.util.UUID;
 
+//https://gist.github.com/sam016/4abe921b5a9ee27f67b3686910293026
 public class AllGattCharacteristics {
 
     private static HashMap<String, String> attributes = new HashMap();
