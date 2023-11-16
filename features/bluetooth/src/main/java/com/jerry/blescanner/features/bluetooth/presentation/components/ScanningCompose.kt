@@ -38,7 +38,7 @@ fun ScanningCompose(
         Text(text="Scanning ...")
         Spacer(modifier = Modifier.height(10.dp))
         Button (onClick = {
-            stopScan(BluetoothStopSource.USER_CLICK_CANCEL)
+            stopScan(BluetoothStopSource.CLICK_CANCEL)
         }){
             Text(text="Stop Scan")
         }

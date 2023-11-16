@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.random.Random
 
 //ref: https://github.com/MatthiasKerat/BLETutorialYt/blob/FinalApp/app/src/main/java/com/example/bletutorial/data/ble/TemperatureAndHumidityBLEReceiveManager.kt
 class BluetoothDeviceScanManager @Inject constructor(
@@ -27,8 +26,6 @@ class BluetoothDeviceScanManager @Inject constructor(
     private val _scannedDeviceState = MutableStateFlow<BluetoothDeviceDomain?>(null)
     val scannedDeviceState: StateFlow<BluetoothDeviceDomain?>
         get() = _scannedDeviceState.asStateFlow()
-
-
 
     private val _scanningState = MutableStateFlow<Boolean>(false)
     val scanningState: StateFlow<Boolean>

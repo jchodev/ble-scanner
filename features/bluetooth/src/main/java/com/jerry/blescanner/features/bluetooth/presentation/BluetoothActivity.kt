@@ -1,52 +1,63 @@
 package com.jerry.blescanner.features.bluetooth.presentation
 
+
 import android.bluetooth.BluetoothAdapter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jerry.blescanner.features.bluetooth.presentation.components.BottomAreaCompose
-import com.jerry.blescanner.features.bluetooth.presentation.components.DevicesList
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.jerry.blescanner.features.bluetooth.presentation.components.BleConnectPage
+import com.jerry.blescanner.features.bluetooth.presentation.components.BleScanPage
 import com.jerry.blescanner.features.bluetooth.presentation.mvi.BluetoothPageIntent
+import com.jerry.blescanner.features.bluetooth.presentation.viewmodel.BluetoothConnectViewModel
 import com.jerry.blescanner.features.bluetooth.presentation.viewmodel.BluetoothViewModel
 import com.jerry.blescanner.features.bluetooth.presentation.viewmodel.YourViewModel
 import com.jerry.blescanner.features.bluetooth.utils.BluetoothStopSource
 import com.jerry.blescanner.jetpack_design_lib.theme.MyTheme
+import com.polidea.rxandroidble3.RxBleClient
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 import javax.inject.Inject
 
+
+const val ADDRESS: String = "address"
+const val CONNECT_URL: String = "%s/?%s=%s"
 @AndroidEntryPoint
 class BluetoothActivity : ComponentActivity() {
+
+    enum class Route {
+        SCAN, CONNECT
+    }
 
     @Inject
     lateinit var bluetoothAdapter: BluetoothAdapter
 
+    private lateinit var rxBleClient : RxBleClient
+    private lateinit var navController: NavHostController
 
     private val viewModel by viewModels<BluetoothViewModel>()
+    private val bluetoothConnectViewModel by viewModels<BluetoothConnectViewModel>()
 
     //for testing only
     private val yourViewModel by viewModels<YourViewModel>()
@@ -77,10 +88,25 @@ class BluetoothActivity : ComponentActivity() {
         viewModel.sendIntent(BluetoothPageIntent.SetBluetoothEnabled(it))
     }
 
+    private val connect: (String) -> Unit ={
+
+        viewModel.sendIntent(BluetoothPageIntent.StopScan(BluetoothStopSource.CLICK_CONNECT))
+
+        navController.navigate(
+            getConnectRoute(address = it)
+        )
+
+    }
+
+    private val disconnect: () -> Unit ={
+        //val ble = BLE(componentActivity = this)
+        bluetoothConnectViewModel.disconnect()
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        rxBleClient = RxBleClient.create(this)
 
         viewModel.initIntent()
 
@@ -109,32 +135,42 @@ class BluetoothActivity : ComponentActivity() {
                         )
                     }
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize().padding(it)
-                    ) {
-                        //StandardBottomSheetM3()
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(7f, true)
-                                .background(Color.White)
+
+                    navController = rememberNavController()
+
+                    NavHost(
+                        modifier = Modifier.padding(it),
+                        navController = navController,
+                        startDestination = Route.SCAN.toString()
+                    ){
+                        //scan page
+                        composable(
+                            route = Route.SCAN.toString()
                         ) {
-                            DevicesList(
-                                devicesState = viewModel.scannedDevicesListState.collectAsStateWithLifecycle()
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(3f, true)
-                                .background(Color.LightGray,  RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                        ) {
-                            BottomAreaCompose(
-                                allPermissionsGranted = onPermissionGranted,
+                            BleScanPage(
+                                viewModel = viewModel,
+                                connect = connect,
+                                disconnect = disconnect,
+                                onPermissionsGranted = onPermissionGranted,
                                 permissionsNonGranted = permissionsNonGranted,
                                 clickSearch = startScanBluetooth,
-                                bottomViewState = viewModel.bottomViewState.collectAsStateWithLifecycle(),
-                                stopScan = stopScanBluetooth,
+                                stopScan = stopScanBluetooth
+                            )
+                        }
+
+                        //connect page
+                        composable(
+                            route = getConnectRoute(address = "{address}"),
+                            arguments = listOf(
+                                navArgument(ADDRESS) {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val address = backStackEntry.arguments?.getString(ADDRESS) ?: ""
+                            BleConnectPage(
+                                address = address,
+                                bluetoothConnectViewModel = bluetoothConnectViewModel
                             )
                         }
                     }
@@ -143,6 +179,15 @@ class BluetoothActivity : ComponentActivity() {
         }
     }
 
+
+    private fun getConnectRoute(address: String): String{
+        return String.format(
+            CONNECT_URL,
+            Route.CONNECT.toString(),
+            ADDRESS,
+            address
+        )
+    }
 
     @Composable
     fun DevicesList2() {

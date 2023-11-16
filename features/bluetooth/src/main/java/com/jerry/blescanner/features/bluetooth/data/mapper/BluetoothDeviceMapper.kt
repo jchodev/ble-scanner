@@ -2,7 +2,6 @@ package com.jerry.blescanner.features.bluetooth.data.mapper
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
-import androidx.compose.runtime.mutableStateOf
 import com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceDomain
 
 

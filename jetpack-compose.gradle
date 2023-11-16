@@ -34,4 +34,7 @@ dependencies {
     //fix jetpack pager build issues
     implementation "androidx.compose.foundation:foundation:$fundation_version"
 
+    // Navigation Compose
+    implementation "androidx.navigation:navigation-compose:$jetpack_navigation_compose_version"
+
 }

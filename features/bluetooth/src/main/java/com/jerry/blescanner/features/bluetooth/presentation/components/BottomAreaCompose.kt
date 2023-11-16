@@ -22,7 +22,7 @@ import com.jerry.blescanner.features.bluetooth.utils.permissionsBleScanList
 @Composable
 fun BottomAreaCompose(
     modifier: Modifier = Modifier,
-    allPermissionsGranted: () -> Unit,
+    onPermissionsGranted: () -> Unit,
     permissionsNonGranted: () -> Unit,
     clickSearch:() -> Unit,
     bottomViewState: State<BottomViewState>,
@@ -34,7 +34,7 @@ fun BottomAreaCompose(
     LaunchedEffect(key1 = multiplePermissionsState.allPermissionsGranted) {
         //Permission Granted from user or not
         if (multiplePermissionsState.allPermissionsGranted) {
-            allPermissionsGranted()
+            onPermissionsGranted()
         }
         else {
             permissionsNonGranted()

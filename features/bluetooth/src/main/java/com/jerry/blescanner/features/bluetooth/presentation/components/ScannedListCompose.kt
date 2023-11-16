@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +25,16 @@ import com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceDomain
 @Composable
 fun DevicesList(
     modifier : Modifier = Modifier,
+    connect: (String) -> Unit,
+    disconnect: () -> Unit,
     devicesState: State<List<BluetoothDeviceDomain>?>
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
         items (devicesState.value ?: emptyList()) {
             DevicesItem(
-                device = it
+                device = it,
+                connect = connect,
+                disconnect = disconnect
             )
         }
     }
@@ -38,7 +43,9 @@ fun DevicesList(
 @Composable
 fun DevicesItem(
     modifier : Modifier = Modifier,
-    device: BluetoothDeviceDomain
+    device: BluetoothDeviceDomain,
+    connect: (String) -> Unit,
+    disconnect: () -> Unit
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -54,6 +61,16 @@ fun DevicesItem(
             Text(text = "Address: ${device.address}")
             Text(text = "Distance: ${device.distance} (Base on signal)")
             Text(text = "RSSI: ${device.rssi}")
+            if (device.connected) {
+                Button(onClick = { disconnect }) {
+                    Text(text = "Discount!")
+                }
+            }
+            else {
+                Button(onClick = { connect.invoke(device.address) }) {
+                    Text(text = "Connect Me")
+                }
+            }
         }
 
     }
@@ -68,8 +85,10 @@ private fun DevicesItemPreview(){
             name = "this is name",
             address = "this is address",
             distance = "10 m",
-            rssi = 10
-        )
+            rssi = 10,
+        ),
+        connect = {},
+        disconnect = {}
     )
 }
 
@@ -98,6 +117,8 @@ private fun DevicesListPreview(){
 
 
     DevicesList(
-        devicesState = list
+        devicesState = list,
+        connect = {},
+        disconnect = {}
     )
 }

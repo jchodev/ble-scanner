@@ -3,6 +3,7 @@ package com.jerry.blescanner.features.bluetooth.presentation.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.jerry.blescanner.basemodule.presentation.mvi.BaseViewModel
+import com.jerry.blescanner.features.bluetooth.domain.BleConnectManager
 import com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceDomain
 import com.jerry.blescanner.features.bluetooth.domain.BluetoothDeviceScanManager
 import com.jerry.blescanner.features.bluetooth.presentation.mvi.BluetoothPageAction
@@ -137,4 +138,5 @@ class BluetoothViewModel @Inject constructor(
         _premissionsGrantedState.value = value
         _bottomViewState.value =  if  (value)  BottomViewState.GrantedPermission else  BottomViewState.NoPermission
     }
+
 }

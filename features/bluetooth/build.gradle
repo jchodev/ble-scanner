@@ -21,4 +21,5 @@ dependencies {
 
  //   testImplementation project(":shared-test")
  //   androidTestImplementation project(":shared-test")
+    implementation "com.polidea.rxandroidble3:rxandroidble:1.17.2"
 }

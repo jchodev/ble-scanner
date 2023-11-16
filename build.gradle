@@ -67,6 +67,8 @@ buildscript {
         permission_verion = '0.32.0'
 
         lifecycle_runtime_compose_version = "2.6.2"
+
+        jetpack_navigation_compose_version = "2.5.3"
     }
 
     repositories {
