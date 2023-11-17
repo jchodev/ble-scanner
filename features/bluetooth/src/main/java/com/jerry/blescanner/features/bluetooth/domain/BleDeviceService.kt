@@ -6,21 +6,21 @@ import android.bluetooth.BluetoothGattService
 import java.util.UUID
 
 data class BleDeviceService(
-    val service: BluetoothGattService,
+    val service: BluetoothGattService? = null,
     val uuid: UUID,
     val name: String,
     val characteristics: List<BleDeviceCharacteristic>
 )
 
 data class BleDeviceCharacteristic(
-    val characteristic: BluetoothGattCharacteristic,
+    val characteristic: BluetoothGattCharacteristic? = null,
     val uuid:UUID,
     val name: String,
     val bleDeviceDescriptors: List<BleDeviceDescriptor>
 )
 
 data class BleDeviceDescriptor(
-    val descriptor: BluetoothGattDescriptor,
+    val descriptor: BluetoothGattDescriptor? = null,
     val uuid:UUID,
     val name: String
 )

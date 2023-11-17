@@ -1,21 +1,26 @@
-package com.jerry.blescanner.features.bluetooth.presentation.components
+package com.jerry.blescanner.features.bluetooth.presentation.components.connect
 
+
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+
 import androidx.compose.ui.Modifier
+
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.jerry.blescanner.basemodule.presentation.UiDataState
 import com.jerry.blescanner.features.bluetooth.domain.BleDeviceService
 import com.jerry.blescanner.features.bluetooth.presentation.viewmodel.BluetoothConnectViewModel
 import com.jerry.blescanner.jetpack_design_lib.common.loading.CommonLoading
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BleConnectPage(
     address: String,
@@ -47,19 +52,16 @@ fun BleConnectPage(
 
         //UI
         if (serviceListState.value?.isNotEmpty() == true){
-
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(serviceListState.value!!){
-                    ServiceItem(bleDeviceService = it)
-                }
-            }
-
+            BleConnectServiceViewPager(
+                serviceListState = serviceListState
+            )
         }
         else {
             CommonLoading()
         }
     }
 }
+
 
 @Composable
 fun ServiceItem(
@@ -68,6 +70,7 @@ fun ServiceItem(
     Column {
         Text(text = "Service: ${bleDeviceService.name} (${bleDeviceService.uuid}" )
     }
+
     bleDeviceService.characteristics.forEach { char->
         Column {
             Text(text = " Characteristic: ${char.name} (${char.uuid}" )

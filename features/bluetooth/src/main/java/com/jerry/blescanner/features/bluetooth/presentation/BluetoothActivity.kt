@@ -26,7 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.jerry.blescanner.features.bluetooth.presentation.components.BleConnectPage
+import com.jerry.blescanner.features.bluetooth.presentation.components.connect.BleConnectPage
 import com.jerry.blescanner.features.bluetooth.presentation.components.BleScanPage
 import com.jerry.blescanner.features.bluetooth.presentation.mvi.BluetoothPageIntent
 import com.jerry.blescanner.features.bluetooth.presentation.viewmodel.BluetoothConnectViewModel
@@ -36,7 +36,6 @@ import com.jerry.blescanner.features.bluetooth.utils.BluetoothStopSource
 import com.jerry.blescanner.jetpack_design_lib.theme.MyTheme
 import com.polidea.rxandroidble3.RxBleClient
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 import javax.inject.Inject
 
