@@ -1,2 +1,2 @@
 # ble-scanner
-this is a project which is help to bluetooth device
+Project on https://play.google.com/store/apps/details?id=com.jerry.blescanner
