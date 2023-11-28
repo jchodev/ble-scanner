@@ -1,0 +1,26 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+}
+
+apply from: "$project.rootDir/common-android-version.gradle"
+apply from: "$project.rootDir/common-library.gradle"
+apply from: "$project.rootDir/jacoco.gradle"
+apply from: "$project.rootDir/jetpack-compose.gradle"
+
+
+android {
+    namespace 'com.jerry.blescanner.features.splash'
+}
+
+
+dependencies {
+    implementation project(":base-modiule")
+    implementation project(":jetpack-design-lib")
+    implementation project(":features:bluetooth")
+
+    //   testImplementation project(":shared-test")
+    //   androidTestImplementation project(":shared-test")
+
+}

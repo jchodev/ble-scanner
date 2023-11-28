@@ -47,4 +47,7 @@ dependencies {
 
     //permission
     implementation "com.google.accompanist:accompanist-permissions:$permission_verion"
+
+    //splashscreen
+    implementation "androidx.core:core-splashscreen:$core_splachscreen_version"
 }

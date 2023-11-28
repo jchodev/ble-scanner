@@ -24,8 +24,8 @@ android {
     defaultConfig {
         applicationId "com.jerry.blescanner"
 
-        versionCode 5
-        versionName "1.0.0"
+        versionCode 7
+        versionName "1.0.2"
 
         buildConfigField "String", "BASE_URL", "\"https://api-proxy.ofcom.org.uk/\""
         buildConfigField "String", "KEY", "\"\""
@@ -94,6 +94,7 @@ android {
 dependencies {
     implementation project(":base-modiule")
     implementation project(":jetpack-design-lib")
+    implementation project(":features:splash")
     implementation project(":features:bluetooth")
 
     // LeakCanary //app only
@@ -103,7 +104,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
-
 
 }
 
