@@ -24,8 +24,8 @@ android {
     defaultConfig {
         applicationId "com.jerry.blescanner"
 
-        versionCode 7
-        versionName "1.0.2"
+        versionCode 8
+        versionName "1.0.3"
 
         buildConfigField "String", "BASE_URL", "\"https://api-proxy.ofcom.org.uk/\""
         buildConfigField "String", "KEY", "\"\""

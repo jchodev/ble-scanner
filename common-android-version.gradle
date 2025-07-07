@@ -7,11 +7,10 @@ tasks.withType(Test) {
 
 android {
 
-    compileSdk 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk 24
-        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -29,5 +28,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = '17'
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
